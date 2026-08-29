@@ -9,8 +9,8 @@ Enemy::Enemy() {
     // SFML 3.1 syntax: {position}, {size}
     current_frame = sf::IntRect({ 0, 0 }, { 192, 192 });
 
-    enemy_shape.setRadius(radius_of_enemy);
-	enemy_shape.setOrigin(sf::Vector2f{ radius_of_enemy, radius_of_enemy });
+    enemy_shape.setRadius(size_of_enemy);
+	enemy_shape.setOrigin(sf::Vector2f{ size_of_enemy, size_of_enemy });
     enemy_shape.setFillColor(sf::Color::White);
     enemy_shape.setPosition(sf::Vector2f(constants::screen_width / 2, constants::screen_height / 2));
 
@@ -37,7 +37,7 @@ void Enemy::setPosition(const sf::Vector2f& position)
 	enemy_shape.setPosition(position);
 }
 
-sf::Vector2i Enemy::getPosition(const sf::Vector2f& position)
+sf::Vector2i Enemy::getPosition()
 {
 	return sf::Vector2i(enemy_shape.getPosition());
 }
@@ -69,7 +69,7 @@ void Enemy::updateAnimation() {
         animation_clock.restart();
     }
 
-    if (attack_clock.getElapsedTime().asSeconds() >= 0.4f) {
+    if (attack_clock.getElapsedTime().asSeconds() >= 0.35f) {
         attack_clock.restart();
     }
 	std::cout << "Attack Clock: " << attack_clock.getElapsedTime().asSeconds() << std::endl;

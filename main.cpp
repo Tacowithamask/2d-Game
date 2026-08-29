@@ -3,7 +3,8 @@
 #include <SFML/System.hpp>
 #include "CONSTANTS_H.h"
 #include "Enemy.h"
-#include "pointer.h"
+#include "Pointer.h"
+#include "Player.h"
 #include <iostream>
 
 int main()
@@ -14,6 +15,7 @@ int main()
 
     Enemy enemy;
 	Pointer pointer;
+    Player player;
 
     while (window.isOpen())
     {
@@ -38,8 +40,8 @@ int main()
 	       } 
 
         sf::Vector2f r_vector = {
-            static_cast<float>(m_position.x) - enemy.getPosition(sf::Vector2f()).x,
-            static_cast<float>(m_position.y) - enemy.getPosition(sf::Vector2f()).y
+            static_cast<float>(m_position.x) - enemy.getPosition().x,
+            static_cast<float>(m_position.y) - enemy.getPosition().y
 		};
         if (r_vector.length() > enemy.getAttackRange())
         {
@@ -56,6 +58,9 @@ int main()
         enemy.facePlayer(sf::Vector2f(float(m_position.x), float(m_position.y)));
         enemy.updateAnimation();
 
+        player.updateAnimation();
+        player.moveWithKeyboard();
+
         if (enemy.attackPlayer())
         {
             pointer.updatehealth(0);
@@ -64,8 +69,9 @@ int main()
 
         window.clear();
 
-		pointer.draw(window);  
+		pointer.draw(window);
 
+        player.draw(window);
 		
         if (r_vector.length() > 0.0f)
         enemy.move(r_vector.normalized());

@@ -15,12 +15,12 @@ public:
 	void move(const sf::Vector2f& direction);
 	void updateAnimation();
 	void setAnimationState(int state); // 0 not moving, 1 moving
-	sf::Vector2i getPosition(const sf::Vector2f& position);
+	sf::Vector2i getPosition();
 	bool attackPlayer(); 
 	void facePlayer(const sf::Vector2f& player_position);
 
 private:
-	const float radius_of_enemy = 45.0f;
+	const float size_of_enemy = 45.0f;
 	sf::CircleShape enemy_shape;
 	sf::Texture enemy_texture;
 	sf::Clock animation_clock;
