@@ -84,7 +84,7 @@ void Enemy::setAnimationState(int state) {
 
     if (state == 0) {
         enemy_texture.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Idle.png");
-        max_frames = 6; // Adjust this if Idle has a different number of frames
+        max_frames = 8; // Adjust this if Idle has a different number of frames
     }
     else if (state == 1) {
         enemy_texture.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Run.png");

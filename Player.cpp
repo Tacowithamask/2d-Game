@@ -80,7 +80,7 @@ void Player::setAnimationState(int state) {
 
 	if (state == 0) {
 		player_texture.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Idle.png");
-		max_frames = 6;
+		max_frames = 8;
 	}
 	else if (state == 1) {
 		player_texture.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Run.png");
