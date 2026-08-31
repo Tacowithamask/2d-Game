@@ -12,6 +12,8 @@ public:
 	sf::Vector2i getPosition(sf::RenderWindow& window);
 	void updatehealth(int new_health);
 	uint16_t gethealth() const;
+	void moveCursor(sf::RenderWindow& window);
+
 private:
 	const float radius_of_pointer = 4.0f;
 	sf::CircleShape pointer_shape;

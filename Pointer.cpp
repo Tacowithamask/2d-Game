@@ -33,3 +33,13 @@ void Pointer::updatehealth(int new_health)
 {
     pointer_health = new_health;
 }
+
+void Pointer::moveCursor(sf::RenderWindow& window)
+{
+    sf::Vector2i m_position = this->getPosition(window);
+    if (m_position.x >= 0 && m_position.x <= 720 && m_position.y >= 0 && m_position.y <= 720)
+    {
+        this->setPosition(sf::Vector2f(float(m_position.x) - 4.0f, float(m_position.y) - 4.0f));
+    }
+
+}

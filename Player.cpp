@@ -29,9 +29,9 @@ void Player::setPosition(const sf::Vector2f& position)
 	player_shape.setPosition(position);
 }
 
-sf::Vector2i Player::getPosition(sf::RenderWindow& window)
+sf::Vector2f Player::getPosition()
 {
-	return sf::Vector2i(player_shape.getPosition());
+	return sf::Vector2f(player_shape.getPosition());
 }
 
 void Player::move(const sf::Vector2f& direction) {
@@ -62,7 +62,9 @@ void Player::updateAnimation() {
 	}
 
 	if (attack_clock.getElapsedTime().asSeconds() >= 0.4f) {
-		attack_clock.restart();
+		attack_clock.stop();
+		attack_clock.reset();
+		this->setAnimationState(0); // 0 = IDLE
 	}
 
 
@@ -96,51 +98,43 @@ void Player::setAnimationState(int state) {
 
 void Player::moveWithKeyboard() {
 
+	sf::Vector2f  direction{ 0.0f, 0.0f };
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ -1.f, 1.f });
-		this->move(sf::Vector2f{ -1 * player_speed, -1 * player_speed / 1.414f }); // 1.414 is the square root of 2, used to normalize diagonal movement
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+		direction.y -= 1.0f;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ 1.f, 1.f });
-		this->move(sf::Vector2f{ 1 * player_speed, -1 * player_speed / 1.414f });
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+		direction.y += 1.0f;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ -1.f, 1.f });
-		this->move(sf::Vector2f{ -1 * player_speed, 1 * player_speed / 1.414f });
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ 1.f, 1.f });
-		this->move(sf::Vector2f{ 1 * player_speed, 1 * player_speed / 1.414f });
-	}
-	else
-
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ -1.f, 1.f });
-		this->move(sf::Vector2f{ -1 * player_speed,0 });
+		direction.x -= 1.0f;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ 1.f,1.f });
-		this->move(sf::Vector2f{ 1, -1 * player_speed});
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+		direction.x += 1.0f;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ 1.f,1.f });
-		this->move(sf::Vector2f{ 1,  1 * player_speed });
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-		this->setAnimationState(1);
-		player_shape.setScale({ 1.f,1.f });
-		this->move(sf::Vector2f{ 1 * player_speed, 1 });
+
+	if (direction.x != 0.0f || direction.y != 0.0f) {
+
+		float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+		direction /= length; // Normalize the direction vector
+
+		if (direction.x < 0) player_shape.setScale({ -1.0f,  1.0f });
+		else player_shape.setScale({ 1.0f, 1.0f });
+
+		this->move(direction * player_speed);
+
+		if (current_state != 2) {
+			this->setAnimationState(1); // 1 = RUN
+		}
 	}
 	else {
-		this->setAnimationState(0);
-	}
 
+		if (current_state != 2) {
+			this->setAnimationState(0); // 0 = IDLE
+		}
+	}
+}
+
+int Player::getAnimationState() const {
+	return current_state;
 }

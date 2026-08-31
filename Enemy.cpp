@@ -37,9 +37,9 @@ void Enemy::setPosition(const sf::Vector2f& position)
 	enemy_shape.setPosition(position);
 }
 
-sf::Vector2i Enemy::getPosition()
+sf::Vector2f Enemy::getPosition()
 {
-	return sf::Vector2i(enemy_shape.getPosition());
+	return sf::Vector2f(enemy_shape.getPosition());
 }
 
 void Enemy::move(const sf::Vector2f& direction)
@@ -119,4 +119,18 @@ void Enemy::facePlayer(const sf::Vector2f& player_position) {
         enemy_shape.setScale({1.f, 1.f}); // Normal orientation
 	}
     enemy_shape.setRotation(angle);
+}
+
+void Enemy::moveTowardsPlayer(const sf::Vector2f& player_position) {
+    sf::Vector2f enemy_position = enemy_shape.getPosition();
+    sf::Vector2f direction = player_position - enemy_position;
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    if (length != 0) {
+        direction /= length; // Normalize the direction
+		this->setAnimationState(1); // Set to moving state    
+        move(direction * enemy_speed); // Move with a speed of 1.0f 
+    }
+    else {
+		this->setAnimationState(0); // Set to idle state
+    }
 }

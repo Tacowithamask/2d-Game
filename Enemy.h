@@ -15,9 +15,12 @@ public:
 	void move(const sf::Vector2f& direction);
 	void updateAnimation();
 	void setAnimationState(int state); // 0 not moving, 1 moving
-	sf::Vector2i getPosition();
+	sf::Vector2f getPosition();
 	bool attackPlayer(); 
+	void moveTowardsPlayer(const sf::Vector2f& player_position);
 	void facePlayer(const sf::Vector2f& player_position);
+
+	float enemy_speed = 1.0f;
 
 private:
 	const float size_of_enemy = 45.0f;
