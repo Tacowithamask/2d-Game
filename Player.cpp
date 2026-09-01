@@ -2,7 +2,15 @@
 
 Player::Player() 
 {
-    if (!player_texture.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Run.png")) {
+	if (!texture_idle.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Idle.png")) {
+        // Handle texture failure 
+    }
+
+	if (!texture_run.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Run.png")) {
+        // Handle texture failure 
+    }
+
+	if (!texture_attack.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Attack1.png")) {
         // Handle texture failure 
     }
 
@@ -12,7 +20,7 @@ Player::Player()
 	player_shape.setRadius(size_of_player);
 	player_shape.setOrigin(sf::Vector2f{ size_of_player, size_of_player });
 	player_shape.setPosition(sf::Vector2f{0 + size_of_player, 0 + size_of_player});
-	player_shape.setTexture(&player_texture);
+	player_shape.setTexture(&texture_idle);
 	player_shape.setTextureRect(current_frame);
 
 	attack_clock.stop();
@@ -41,11 +49,12 @@ void Player::move(const sf::Vector2f& direction) {
 void Player::updateAnimation() {
 
 	if (current_state == 2) {
-		attack_clock.start();
+		attack_clock.start(); // start the timer for attack animation
 	}
 	else {
 		attack_clock.stop();
 		attack_clock.reset();
+		has_attacked = false; // Reset the attack flag if not attacking
 	}
 	
 	if (animation_clock.getElapsedTime().asSeconds() >= 0.1f) {
@@ -61,10 +70,10 @@ void Player::updateAnimation() {
 
 	}
 
-	if (attack_clock.getElapsedTime().asSeconds() >= 0.4f) {
-		attack_clock.stop();
-		attack_clock.reset();
-		this->setAnimationState(0); // 0 = IDLE
+	if (attack_clock.getElapsedTime().asSeconds() >= 0.35f) {
+		attack_clock.restart();
+		has_attacked = false; // Reset the attack flag after the attack animation duration
+		this->setAnimationState(0); // Return to idle state after attack
 	}
 
 
@@ -79,15 +88,15 @@ void Player::setAnimationState(int state) {
 	current_state = state;
 
 	if (state == 0) {
-		player_texture.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Idle.png");
+		player_shape.setTexture(&texture_idle);
 		max_frames = 8;
 	}
 	else if (state == 1) {
-		player_texture.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Run.png");
+		player_shape.setTexture(&texture_run);
 		max_frames = 6; // number of images in the file
 	}
 	else if (state == 2) {
-		player_texture.loadFromFile("assets/Units/Blue Units/Warrior/Warrior_Attack1.png");
+		player_shape.setTexture(&texture_attack);
 		max_frames = 4;
 	}
 
@@ -137,4 +146,35 @@ void Player::moveWithKeyboard() {
 
 int Player::getAnimationState() const {
 	return current_state;
+}
+
+int Player::getHealth() const {
+	return player_health;
+}
+
+int Player::getDamage() const {
+	return player_damage;
+}	
+
+void Player::takeDamage(int damage) {
+	player_health -= damage;
+	if (player_health < 0) player_health = 0;
+}
+
+bool Player::isAlive() const {
+	return player_health > 0;
+}
+
+bool Player::attackEnemy() {
+	// Deal damage at the 0.30 second mark of the animation
+	if (attack_clock.getElapsedTime().asSeconds() >= 0.3f && !has_attacked) {
+		has_attacked = true; // Prevent multi-hit bug
+		return true;
+	}
+	return false;
+}
+
+bool Player::isFacingRight() const {
+	// If the scale is greater than 0, the player is facing right.
+	return player_shape.getScale().x > 0.0f;
 }

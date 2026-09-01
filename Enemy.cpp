@@ -1,10 +1,16 @@
 #include "Enemy.h"
 
 Enemy::Enemy() {
-    // Load the full texture sheet
-    if (!enemy_texture.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Run.png")) {
+        
+    if (!texture_idle.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Idle.png")) {
         // Handle texture failure 
-    }
+	}
+    if (!texture_run.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Run.png")) {
+        // Handle texture failure 
+	}
+    if (!texture_attack.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Attack1.png")) {
+        // Handle texture failure 
+	}   
 
     // SFML 3.1 syntax: {position}, {size}
     current_frame = sf::IntRect({ 0, 0 }, { 192, 192 });
@@ -14,7 +20,7 @@ Enemy::Enemy() {
     enemy_shape.setFillColor(sf::Color::White);
     enemy_shape.setPosition(sf::Vector2f(constants::screen_width / 2, constants::screen_height / 2));
 
-    enemy_shape.setTexture(&enemy_texture);
+    enemy_shape.setTexture(&texture_idle);
     enemy_shape.setTextureRect(current_frame);
 
     attack_clock.stop();
@@ -54,6 +60,7 @@ void Enemy::updateAnimation() {
     else {
         attack_clock.stop(); // stop the timer for attack animation
         attack_clock.reset();
+		has_attacked = false;   // Reset the attack flag if not attacking
     }
     // Advance the frame every 0.1 seconds
     if (animation_clock.getElapsedTime().asSeconds() > 0.1f) {
@@ -71,9 +78,8 @@ void Enemy::updateAnimation() {
 
     if (attack_clock.getElapsedTime().asSeconds() >= 0.35f) {
         attack_clock.restart();
-    }
-	std::cout << "Attack Clock: " << attack_clock.getElapsedTime().asSeconds() << std::endl;
-	std::cout << "Animation Clock: " << animation_clock.getElapsedTime().asSeconds() << std::endl;
+		has_attacked = false; // Reset the attack flag after the attack animation duration
+	}
 }
 
 void Enemy::setAnimationState(int state) {
@@ -83,15 +89,15 @@ void Enemy::setAnimationState(int state) {
     current_state = state;
 
     if (state == 0) {
-        enemy_texture.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Idle.png");
+        enemy_shape.setTexture(&texture_idle);
         max_frames = 8; // Adjust this if Idle has a different number of frames
     }
     else if (state == 1) {
-        enemy_texture.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Run.png");
+        enemy_shape.setTexture(&texture_run);
         max_frames = 6; // Adjust this if Run has a different number of frames
     }
     else if (state == 2) {
-        enemy_texture.loadFromFile("assets/Units/Purple Units/Warrior/Warrior_Attack1.png");
+        enemy_shape.setTexture(&texture_attack);
         max_frames = 4; // Adjust this if Attack has a different number of frames
 	}
     // Reset the frame position back to the start whenever the animation changes
@@ -101,7 +107,8 @@ void Enemy::setAnimationState(int state) {
 
 bool Enemy::attackPlayer() {
 
-    if (attack_clock.getElapsedTime().asSeconds()>= 0.3f) {
+    if (attack_clock.getElapsedTime().asSeconds()>= 0.3f && !has_attacked) {
+        has_attacked = true;
         return true;
 	}
 
@@ -111,14 +118,12 @@ bool Enemy::attackPlayer() {
 void Enemy::facePlayer(const sf::Vector2f& player_position) {
     sf::Vector2f enemy_position = enemy_shape.getPosition();
     sf::Vector2f direction = player_position - enemy_position;
-    sf::Angle angle = sf::degrees(std::atan2(direction.y, direction.x) * 180 / constants::pi);
-
-    if (angle.asDegrees() > 90 || angle.asDegrees() < -90) {
-        enemy_shape.setScale({ 1.f, -1.f }); // Flip vertically 
-    } else {
-        enemy_shape.setScale({1.f, 1.f}); // Normal orientation
+    if ( direction.x < 0) {
+        enemy_shape.setScale({ -1.0f, 1.0f }); // Flip horizontally
+    }
+    else {
+        enemy_shape.setScale({ 1.0f, 1.0f }); // Normal orientation
 	}
-    enemy_shape.setRotation(angle);
 }
 
 void Enemy::moveTowardsPlayer(const sf::Vector2f& player_position) {
@@ -133,4 +138,21 @@ void Enemy::moveTowardsPlayer(const sf::Vector2f& player_position) {
     else {
 		this->setAnimationState(0); // Set to idle state
     }
+}
+
+int Enemy::getHealth() const {
+    return enemy_health;
+}
+
+int Enemy::getDamage() const {
+    return attack_damage;
+}
+
+void Enemy::takeDamage(int damage) {
+    enemy_health -= damage;
+    if (enemy_health < 0) enemy_health = 0;
+}
+
+bool Enemy::isAlive() const {
+    return enemy_health > 0;
 }

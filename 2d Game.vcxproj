@@ -141,12 +141,14 @@
   <ItemGroup>
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Pointer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CONSTANTS_H.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Pointer.h" />
   </ItemGroup>

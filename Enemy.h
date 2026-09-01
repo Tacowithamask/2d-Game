@@ -18,14 +18,21 @@ public:
 	sf::Vector2f getPosition();
 	bool attackPlayer(); 
 	void moveTowardsPlayer(const sf::Vector2f& player_position);
-	void facePlayer(const sf::Vector2f& player_position);
+	void facePlayer(const sf::Vector2f& player_position); 
+
+	int getHealth() const;
+	int getDamage() const;
+	void takeDamage(int damage);
+	bool isAlive() const;
 
 	float enemy_speed = 1.0f;
 
 private:
-	const float size_of_enemy = 45.0f;
+	float size_of_enemy = 45.0f;
+	int enemy_health = 50;
+	int attack_damage = 10;
 	sf::CircleShape enemy_shape;
-	sf::Texture enemy_texture;
+	sf::Texture texture_idle, texture_run, texture_attack;
 	sf::Clock animation_clock;
 	sf::Clock attack_clock;
 	sf::IntRect current_frame;
@@ -33,6 +40,7 @@ private:
 	int max_frames = 6;
 	int current_state = -1;
 	float attack_range = 40.0f;
+	bool has_attacked = false;
 };
 
 
