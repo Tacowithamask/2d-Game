@@ -107,18 +107,20 @@ void Player::setAnimationState(int state) {
 
 void Player::moveWithKeyboard() {
 
+	constants::borderCollision playerBorder = this->isOutOfWindow(); // Update the border collision status
+
 	sf::Vector2f  direction{ 0.0f, 0.0f };
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !playerBorder.top) {
 		direction.y -= 1.0f;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && !playerBorder.bottom) {
 		direction.y += 1.0f;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && !playerBorder.left) {
 		direction.x -= 1.0f;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && !playerBorder.right) {
 		direction.x += 1.0f;
 	}
 
@@ -177,4 +179,23 @@ bool Player::attackEnemy() {
 bool Player::isFacingRight() const {
 	// If the scale is greater than 0, the player is facing right.
 	return player_shape.getScale().x > 0.0f;
+}
+
+constants::borderCollision Player::isOutOfWindow() {
+	constants::borderCollision playerBorder;
+	sf::Vector2f playerPos = player_shape.getPosition();
+	float radius = player_shape.getRadius();
+	if (playerPos.x < 0) {
+		playerBorder.left = true;
+	}
+	if (playerPos.x > constants::screen_width) {
+		playerBorder.right = true;
+	}
+	if (playerPos.y < 0) {
+		playerBorder.top = true;
+	}
+	if (playerPos.y > constants::screen_height) {
+		playerBorder.bottom = true;
+	}
+	return playerBorder;
 }
