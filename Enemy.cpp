@@ -126,18 +126,51 @@ void Enemy::facePlayer(const sf::Vector2f& player_position) {
 	}
 }
 
-void Enemy::moveTowardsPlayer(const sf::Vector2f& player_position) {
-    sf::Vector2f enemy_position = enemy_shape.getPosition();
-    sf::Vector2f direction = player_position - enemy_position;
-    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    if (length != 0) {
-        direction /= length; // Normalize the direction
-		this->setAnimationState(1); // Set to moving state    
-        move(direction * enemy_speed); // Move with a speed of 1.0f 
+void Enemy::moveTowardsPlayer(const sf::Vector2f& player_position, const std::vector<std::unique_ptr<Enemy>>& enemies) {
+	// give weight to the direction vector based on the distance to the player, and also avoid overlapping with other enemies
+	sf::Vector2f direction_to_player = player_position - enemy_shape.getPosition();
+	float direction_length = std::sqrt(direction_to_player.x * direction_to_player.x + direction_to_player.y * direction_to_player.y);
+
+    if (direction_length != 0) {
+        direction_to_player /= direction_length; // Normalize the direction
+    }
+
+	sf::Vector2f seperation_vector{ 0.0f, 0.0f };
+	int nearby_count = 0;
+	float seperation_distance = 50.0f; // Minimum distance to maintain from other enemies 
+
+    for ( const auto& other_enemy : enemies) {
+        if (other_enemy.get() != this) { // Don't compare with itself
+            sf::Vector2f to_other = other_enemy->getPosition() - enemy_shape.getPosition();
+            float distance_to_other = std::sqrt(to_other.x * to_other.x + to_other.y * to_other.y);
+            if (distance_to_other < seperation_distance && distance_to_other > 0) {
+                seperation_vector -= (to_other / distance_to_other); // Move away from the other enemy
+                nearby_count++;
+            }
+        }
+	}
+
+    if (nearby_count > 0) {
+        seperation_vector /= static_cast<float>(nearby_count); // Average the separation vector
+	}
+
+	float seperation_length = std::sqrt(seperation_vector.x * seperation_vector.x + seperation_vector.y * seperation_vector.y);
+    if (seperation_length != 0) {
+        seperation_vector /= seperation_length; // Normalize the separation vector
+	}
+
+	float weight_to_player = 1.3f; // Weight for moving towards the player
+	sf::Vector2f final_direction = (direction_to_player * weight_to_player) + seperation_vector;
+    float final_length = std::sqrt(final_direction.x * final_direction.x + final_direction.y * final_direction.y);
+    if (final_length != 0) {
+		this->setAnimationState(1); // Set to moving state
+        final_direction /= final_length; // Normalize the final direction
     }
     else {
-		this->setAnimationState(0); // Set to idle state
+		this->setAnimationState(0); // Set to idle state if no movement
     }
+	enemy_shape.move(final_direction * enemy_speed);
+
 }
 
 int Enemy::getHealth() const {

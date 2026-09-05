@@ -97,11 +97,15 @@ int main()
                         std::cout << "Player hit! HP: " << player.getHealth() << std::endl;
                     }
                 }
-                else
+				else if (enemy_distance <= 200.0f)  // Only move towards the player if within a certain range
                 {
-                    enemy->moveTowardsPlayer(player.getPosition());
+					enemy->setAnimationState(1); // MOVE
+                    enemy->moveTowardsPlayer(player.getPosition(), enemies);
                 }
-
+                else {
+					enemy->setAnimationState(0); // IDLE
+                }
+                
                 enemy->facePlayer(player.getPosition());
             }
 

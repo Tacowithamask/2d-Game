@@ -3,6 +3,8 @@
 #include <SFML/Window.hpp>
 #include "CONSTANTS_H.h"
 #include <iostream>
+#include <vector>
+#include <memory>
 
 class Enemy
 {
@@ -17,8 +19,8 @@ public:
 	void setAnimationState(int state); // 0 not moving, 1 moving
 	sf::Vector2f getPosition();
 	bool attackPlayer(); 
-	void moveTowardsPlayer(const sf::Vector2f& player_position);
-	void facePlayer(const sf::Vector2f& player_position); 
+	void moveTowardsPlayer(const sf::Vector2f& player_position, const std::vector<std::unique_ptr<Enemy>>& enemies);
+	void facePlayer(const sf::Vector2f& player_position);
 
 	int getHealth() const;
 	int getDamage() const;

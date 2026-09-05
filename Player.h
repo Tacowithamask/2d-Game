@@ -27,8 +27,9 @@ public:
 	bool attackEnemy();
 
 	bool isFacingRight() const;
+	constants::borderCollision isOutOfWindow();
 
-	float attack_range = 70.0f;
+	float attack_range = 50.0f;
 	float size_of_player = 45.0f;
 	float player_speed = 3.0f;
 

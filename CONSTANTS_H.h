@@ -12,5 +12,13 @@ namespace constants
 	constexpr unsigned int screen_height{ 600 };
 
 	constexpr float radius_of_mouse{ 4.0f };
+
+	struct borderCollision {
+		bool top = 0;
+		bool bottom = 0;
+		bool left = 0;
+		bool right = 0;
+	};
+
 }
 #endif
