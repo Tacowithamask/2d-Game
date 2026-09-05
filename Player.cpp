@@ -166,8 +166,8 @@ bool Player::isAlive() const {
 }
 
 bool Player::attackEnemy() {
-	// Deal damage at the 0.30 second mark of the animation
-	if (attack_clock.getElapsedTime().asSeconds() >= 0.3f && !has_attacked) {
+	// Deal damage at the 0.20 second mark of the animation
+	if (attack_clock.getElapsedTime().asSeconds() >= 0.2f && !has_attacked) {
 		has_attacked = true; // Prevent multi-hit bug
 		return true;
 	}
